@@ -7,7 +7,9 @@
 */
 #ifndef CYBOZU_DONT_USE_STRING
 #include <string>
+#ifndef SGX_ENCLAVE
 #include <iosfwd>
+#endif
 #endif
 #include <cybozu/exception.hpp>
 #include <memory.h>
@@ -32,7 +34,7 @@ struct enable_if { typedef T type; };
 template <class T>
 struct enable_if<false, T> {};
 
-#ifndef CYBOZU_DONT_USE_STRING
+#if !defined(CYBOZU_DONT_USE_STRING) && !defined(SGX_ENCLAVE)
 /* specialization for istream */
 template<class InputStream>
 size_t readSome_inner(void *buf, size_t size, InputStream& is, typename enable_if<is_convertible<InputStream, std::istream>::value>::type* = 0)
@@ -59,7 +61,7 @@ size_t readSome_inner(void *buf, size_t size, InputStream& is)
 }
 #endif
 
-#ifndef CYBOZU_DONT_USE_EXCEPTION
+#if !defined(CYBOZU_DONT_USE_STRING) && !defined(SGX_ENCLAVE)
 /* specialization for ostream */
 template<class OutputStream>
 void writeSub(OutputStream& os, const void *buf, size_t size, typename enable_if<is_convertible<OutputStream, std::ostream>::value>::type* = 0)
@@ -68,7 +70,7 @@ void writeSub(OutputStream& os, const void *buf, size_t size, typename enable_if
 }
 #endif
 
-#ifndef CYBOZU_DONT_USE_STRING
+#if !defined(CYBOZU_DONT_USE_STRING) && !defined(SGX_ENCLAVE)
 /* generic version for void write(const void*, size_t), which writes all data */
 template<class OutputStream>
 void writeSub(OutputStream& os, const void *buf, size_t size, typename enable_if<!is_convertible<OutputStream, std::ostream>::value>::type* = 0)

@@ -176,6 +176,11 @@ public:
 		CYBOZU_SNPRINTF(buf, sizeof(buf), "%d", x);
 		return operator<<(buf);
 	}
+	template<class T>
+	Exception& operator<<(const T& x)
+	{
+		return operator<<("UNSUPPORTED TYPES");
+	}
 #else
 	template<class T>
 	Exception& operator<<(const T& x)

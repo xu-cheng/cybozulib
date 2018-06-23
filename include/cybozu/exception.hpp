@@ -38,7 +38,9 @@ public:
 
 #include <string>
 #include <algorithm>
+#ifndef SGX_ENCLAVE
 #include <sstream>
+#endif
 #include <errno.h>
 #include <stdio.h>
 #ifdef _WIN32
@@ -167,6 +169,14 @@ public:
 		return operator<<(cybozu::exception::wstr2str(s));
 	}
 #endif
+#if defined(SGX_ENCLAVE)
+	Exception& operator<<(const size_t& x)
+	{
+		char buf[64];
+		CYBOZU_SNPRINTF(buf, sizeof(buf), "%d", x);
+		return operator<<(buf);
+	}
+#else
 	template<class T>
 	Exception& operator<<(const T& x)
 	{
@@ -174,6 +184,7 @@ public:
 		os << x;
 		return operator<<(os.str());
 	}
+#endif
 };
 
 class ErrorNo {
@@ -243,10 +254,12 @@ private:
 	NativeErrorNo err_;
 };
 
+#ifndef SGX_ENCLAVE
 inline std::ostream& operator<<(std::ostream& os, const cybozu::ErrorNo& self)
 {
 	return os << self.toString();
 }
+#endif
 
 } // cybozu
 #endif

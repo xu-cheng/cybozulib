@@ -6,7 +6,7 @@
 #include <assert.h>
 #include <cybozu/inttype.hpp>
 
-#if (CYBOZU_HOST == CYBOZU_HOST_INTEL)
+#if (CYBOZU_HOST == CYBOZU_HOST_INTEL) && !defined(SGX_ENCLAVE)
 	#if defined(_WIN32)
 		#include <intrin.h>
 	#elif defined(__linux__) || defined(__CYGWIN__) || defined(__clang__)

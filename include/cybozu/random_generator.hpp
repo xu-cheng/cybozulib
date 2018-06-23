@@ -14,6 +14,8 @@
 #include <wincrypt.h>
 #pragma comment (lib, "advapi32.lib")
 #include <cybozu/critical_section.hpp>
+#elif defined(SGX_ENCLAVE)
+#include <sgx_trts.h>
 #else
 #include <sys/types.h>
 #include <fcntl.h>
@@ -90,6 +92,14 @@ private:
 	char buf_[bufSize];
 	size_t pos_;
 	cybozu::CriticalSection cs_;
+#elif defined(SGX_ENCLAVE)
+	RandomGenerator() {}
+	template<class T>
+	void read(T *buf, size_t bufNum)
+	{
+		const size_t byteSize = sizeof(T) * bufNum;
+		sgx_read_rand((unsigned char*)buf, bufNum);
+	}
 #else
 	RandomGenerator()
 		: fp_(::fopen("/dev/urandom", "rb"))
@@ -113,8 +123,10 @@ private:
 		}
 	}
 #endif
+#if !defined(SGX_ENCLAVE)
 private:
 	FILE *fp_;
+#endif
 };
 
 template<class T, class RG>
